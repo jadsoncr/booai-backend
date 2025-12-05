@@ -56,7 +56,7 @@ Regras:
 
   try {
     const response = await axios.post(
-      "https://api.deepseek.com/chat/completions",
+      "https://api.deepseek.com/v1/chat/completions",
       {
         model: "deepseek-chat",
         messages: [
@@ -128,30 +128,3 @@ Me pergunte algo como:
 // -----------------------------------------------------------
 app.get("/teste-deepseek", async (req, res) => {
   try {
-    const response = await axios.post(
-      "https://api.deepseek.com/v1/chat/completions",
-      {
-        model: "deepseek-chat",
-        messages: [{ role: "user", content: "Teste de conexão BRO.AI." }],
-        max_tokens: 50
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
-        }
-      }
-    );
-
-    res.json({ ok: true, resposta: response.data });
-  } catch (err) {
-    res.json({ ok: false, erro: err.message, detalhes: err?.response?.data });
-  }
-});
-
-// -----------------------------------------------------------
-// 🚀 Inicia o servidor
-// -----------------------------------------------------------
-app.listen(PORT, () => {
-  console.log(`Servidor BRO.AI rodando na porta ${PORT}`);
-});
