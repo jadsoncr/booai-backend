@@ -85,7 +85,7 @@ Regras:
 }
 
 // -----------------------------------------------------------
-// 📩 Rota Webhook do Telegram
+// 📩 Webhook do Telegram
 // -----------------------------------------------------------
 app.post("/webhook", async (req, res) => {
   const update = req.body;
@@ -112,7 +112,6 @@ Me pergunte algo como:
       return res.status(200).send({ ok: true });
     }
 
-    // IA responde
     const resposta = await chamarBroAi(texto);
     await bot.sendMessage(chatId, resposta);
 
@@ -125,15 +124,34 @@ Me pergunte algo como:
 });
 
 // -----------------------------------------------------------
-// 🌐 Rota de teste da DeepSeek via navegador
+// 🌐 Rota de teste DeepSeek via navegador
 // -----------------------------------------------------------
 app.get("/teste-deepseek", async (req, res) => {
   try {
-    const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.DEEPSEEK_API_KEY}`
+    const response = await axios.post(
+      "https://api.deepseek.com/v1/chat/completions",
+      {
+        model: "deepseek-chat",
+        messages: [{ role: "user", content: "Teste de conexão BRO.AI." }],
+        max_tokens: 50
       },
-      body: JSON.stringify({
-        model: "de
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
+        }
+      }
+    );
+
+    res.json({ ok: true, resposta: response.data });
+  } catch (err) {
+    res.json({ ok: false, erro: err.message, detalhes: err?.response?.data });
+  }
+});
+
+// -----------------------------------------------------------
+// 🚀 Inicia o servidor
+// -----------------------------------------------------------
+app.listen(PORT, () => {
+  console.log(`Servidor BRO.AI rodando na porta ${PORT}`);
+});
