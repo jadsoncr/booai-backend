@@ -7,20 +7,28 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// --- Configuração básica do Telegram (webhook) ---
+// --- Configuração do Telegram ---
 const TelegramBot = require("node-telegram-bot-api");
 
-const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN; // variável no Railway
+// o token vem das variáveis de ambiente do Railway
+const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
+
+if (!TELEGRAM_TOKEN) {
+  console.error("ERRO: TELEGRAM_TOKEN não definido nas variáveis de ambiente!");
+  process.exit(1); // derruba o servidor se não tiver token
+}
+
+// cria o bot em modo webhook (sem polling)
 const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: false });
 
-// 🚨 AGORA A ROTA É /webhook (igual ao que você configurou no Telegram)
+// --- Rota que o Telegram chama (webhook) ---
 app.post("/webhook", (req, res) => {
   const body = req.body;
 
-  // LOG FORTE pra ver no Railway
+  // Log forte para debug
   console.log("🔥 UPDATE RECEBIDO DO TELEGRAM:", JSON.stringify(body, null, 2));
 
-  // Segurança básica: garante que veio uma mensagem
+  // Se não tiver mensagem, só responde ok
   if (!body || !body.message) {
     return res.status(200).json({ ok: true });
   }
@@ -30,8 +38,9 @@ app.post("/webhook", (req, res) => {
 
   console.log("Mensagem recebida do Telegram:", chatId, text);
 
-  // RESPOSTA PROVISÓRIA (aqui depois entra o agente DeepSeek/BOO.AI)
-  const resposta = "👋 Oi, eu sou o BOO.AI em testes. Já recebi sua mensagem!";
+  // RESPOSTA PROVISÓRIA (depois entra a IA aqui)
+  const resposta =
+    "👋 Oi, eu sou o BOO.AI em testes. Já recebi sua mensagem!";
 
   bot
     .sendMessage(chatId, resposta)
@@ -44,18 +53,12 @@ app.post("/webhook", (req, res) => {
     });
 });
 
-// Rota principal para testar
+// --- Rota principal para teste via navegador ---
 app.get("/", (req, res) => {
   res.send("BOOAI API ONLINE 🚀");
 });
 
-// ❌ Removida a rota extra /webhook que só logava
-// app.post("/webhook", (req, res) => {
-//   console.log("Webhook recebido:", req.body);
-//   res.json({ ok: true });
-// });
-
-// Porta (Railway define via process.env.PORT)
+// --- Sobe o servidor ---
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log("Servidor BOOAI rodando na porta " + PORT);
