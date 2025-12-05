@@ -1,26 +1,25 @@
-// BOOAI Backend - Servidor Express
-import express from "express";
-import cors from "cors";
-import 'dotenv/config';
+// BOOAI Backend - Servidor Express (CommonJS)
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Rota para testar se o servidor está online
+// Rota principal para testar
 app.get("/", (req, res) => {
-    res.json({ message: "BOOAI backend está online " });
+  res.send("BOOAI API ONLINE 🚀");
 });
 
-// Rota que o Telegram vai usar para enviar mensagens
-app.post("/webhook", async (req, res) => {
-    console.log("Mensagem recebida do Telegram:", req.body);
-
-    return res.json({
-        ok: true
-    });
+// Rota exemplo para futuro webhook (Telegram, Deepseek, etc.)
+app.post("/webhook", (req, res) => {
+  console.log("Webhook recebido:", req.body);
+  res.json({ ok: true });
 });
 
-// Porta do Railway (obrigatório usar process.env.PORT)
+// Porta (Railway define via process.env.PORT)
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log("Servidor BOOAI rodando na porta " + PORT));
+app.listen(PORT, () => {
+  console.log("Servidor BOOAI rodando na porta " + PORT);
+});
