@@ -10,14 +10,17 @@ app.use(express.json());
 // --- Configuração básica do Telegram (webhook) ---
 const TelegramBot = require("node-telegram-bot-api");
 
-const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN; // vamos colocar no .env
+const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN; // variável no Railway
 const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: false });
 
-// Essa rota é chamada pelo Telegram quando alguém fala com o bot
-app.post("/telegram/webhook", (req, res) => {
+// 🚨 AGORA A ROTA É /webhook (igual ao que você configurou no Telegram)
+app.post("/webhook", (req, res) => {
   const body = req.body;
 
-  // Segurança básica: garante que veio mesmo do Telegram
+  // LOG FORTE pra ver no Railway
+  console.log("🔥 UPDATE RECEBIDO DO TELEGRAM:", JSON.stringify(body, null, 2));
+
+  // Segurança básica: garante que veio uma mensagem
   if (!body || !body.message) {
     return res.status(200).json({ ok: true });
   }
@@ -41,17 +44,16 @@ app.post("/telegram/webhook", (req, res) => {
     });
 });
 
-
 // Rota principal para testar
 app.get("/", (req, res) => {
   res.send("BOOAI API ONLINE 🚀");
 });
 
-// Rota exemplo para futuro webhook (Telegram, Deepseek, etc.)
-app.post("/webhook", (req, res) => {
-  console.log("Webhook recebido:", req.body);
-  res.json({ ok: true });
-});
+// ❌ Removida a rota extra /webhook que só logava
+// app.post("/webhook", (req, res) => {
+//   console.log("Webhook recebido:", req.body);
+//   res.json({ ok: true });
+// });
 
 // Porta (Railway define via process.env.PORT)
 const PORT = process.env.PORT || 8080;
