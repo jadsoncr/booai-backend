@@ -2,6 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
+const TelegramBot = require("node-telegram-bot-api");
 require("dotenv").config();
 
 const app = express();
@@ -24,9 +25,8 @@ if (!DEEPSEEK_API_KEY) {
 }
 
 // ------------------------
-// 🤖 Telegram Bot (Webhooks)
+// 🤖 Configuração do bot Telegram (webhook)
 // ------------------------
-const TelegramBot = require("node-telegram-bot-api");
 const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: false });
 
 // -----------------------------------------------------------
@@ -128,3 +128,30 @@ Me pergunte algo como:
 // -----------------------------------------------------------
 app.get("/teste-deepseek", async (req, res) => {
   try {
+    const response = await axios.post(
+      "https://api.deepseek.com/v1/chat/completions",
+      {
+        model: "deepseek-chat",
+        messages: [{ role: "user", content: "Teste de conexão BRO.AI." }],
+        max_tokens: 50,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
+        },
+      }
+    );
+
+    res.json({ ok: true, resposta: response.data });
+  } catch (err) {
+    res.json({ ok: false, erro: err.message, detalhes: err?.response?.data });
+  }
+});
+
+// -----------------------------------------------------------
+// 🚀 Inicia o servidor
+// -----------------------------------------------------------
+app.listen(PORT, () => {
+  console.log(`Servidor BRO.AI rodando na porta ${PORT}`);
+});
