@@ -40,7 +40,7 @@ app.post("/webhook", (req, res) => {
 
   // RESPOSTA PROVISÓRIA (depois entra a IA aqui)
   const resposta =
-    "👋 Oi, eu sou o BOO.AI em testes. Já recebi sua mensagem!";
+    "🤖 Olá! Eu sou o BRO.AI — seu parceiro inteligente que transforma gestão em resultado, de forma rápida, simples e eficiente.!";
 
   bot
     .sendMessage(chatId, resposta)
