@@ -127,12 +127,31 @@ app.post("/webhook", async (req, res) => {
 });
 
 // --- Rota principal para teste via navegador ---
-app.get("/", (req, res) => {
-  res.send("BRO.AI API ONLINE 🚀");
+app.get("/teste-deepseek", async (req, res) => {
+  try {
+    const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.DEEPSEEK_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "deepseek-chat",
+        messages: [
+          { role: "user", content: "Olá, teste de conexão." }
+        ]
+      })
+    });
+
+    const data = await response.json();
+    res.json({ ok: true, resposta: data });
+
+  } catch (err) {
+    res.json({ ok: false, erro: err.message });
+  }
 });
 
-// --- Sobe o servidor ---
-const PORT = process.env.PORT || 8080;
+
 app.listen(PORT, () => {
   console.log("Servidor BRO.AI rodando na porta " + PORT);
 });
